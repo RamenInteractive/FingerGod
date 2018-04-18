@@ -25,8 +25,8 @@ class FingerGodGameObjectTest: XCTestCase {
     func testObjectComponentsBasic() {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
-        let c1 = GameObject(id: 0)
-        let c2 = GameObject(id: 1)
+        let c1 = GameObject()
+        let c2 = GameObject()
         c1.addComponent(type: CounterComponent.self)
         c2.addComponent(type: CounterComponent.self)
         c2.getComponent(type: CounterComponent.self)?.count = 5
