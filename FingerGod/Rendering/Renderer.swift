@@ -7,7 +7,7 @@
 //
 import GLKit
 
-
+// The overall static renderer for the game
 public class Renderer {
     public static var perspectiveMatrix: GLKMatrix4 {
         get {
@@ -15,6 +15,7 @@ public class Renderer {
         }
     }
     
+    // The camera class for the renderer to define various camera-adjusting functions
     public class Camera {
         
         public var perspectiveMatrix : GLKMatrix4!
@@ -25,15 +26,18 @@ public class Renderer {
             }
         }
         
+        // Moves the camera relative to world space
         public func move(x: Float, y: Float, z: Float) {
             let tmp = GLKMatrix4Translate(GLKMatrix4Identity, x, y, z)
             transform = GLKMatrix4Multiply(tmp, transform)
         }
         
+        // Moves the camera relative to local space
         public func moveRelative(x: Float, y: Float, z: Float) {
             transform = GLKMatrix4Translate(transform, x, y, z)
         }
         
+        // Rotates the camera (relative to local space)
         public func rotate(angle: Float, x: Float, y: Float, z: Float) {
             transform = GLKMatrix4Rotate(transform, angle, x, y, z)
         }
@@ -64,6 +68,7 @@ public class Renderer {
         camera.transform = GLKMatrix4Identity
     }
     
+    // Prepares the renderer for use by linking it with a view, and if necessary, cleaning it from previous use
     public static func setup(view: GLKView) {
         if !setupBefore {
             context = EAGLContext.init(api: EAGLRenderingAPI.openGLES3)
@@ -99,6 +104,7 @@ public class Renderer {
         }
     }
     
+    // Loads the main shaders and links them
     private static func setupShaders() {
         let vsh = loadShader(filename: "Shader", type: GL_VERTEX_SHADER)
         let fsh = loadShader(filename: "Shader", type: GL_FRAGMENT_SHADER)
@@ -127,7 +133,8 @@ public class Renderer {
         uniforms.shade = glGetUniformLocation(program, "shadeInFrag")
         uniforms.texture = glGetUniformLocation(program, "texSampler")
     }
-    
+
+    // Loads a single shader
     private static func loadShader(filename: String, type: Int32) -> GLuint {
         do {
             let path = Bundle.main.path(forResource: filename, ofType: (type == GL_VERTEX_SHADER ? "vsh" : "fsh"))!
@@ -192,6 +199,8 @@ public class Renderer {
             glUniform1i(uniforms.shade, GL_TRUE)
             
             var texId = 0
+            
+            // If we don't have a texture for the model, just set it to the default texture we loaded earlier
             if (inst.model.texture != nil) {
                 texId = textureIds[inst.model.texture!.name]!
             }
