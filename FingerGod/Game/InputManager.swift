@@ -27,6 +27,12 @@ public class InputManager : Subscriber {
         powerMenu = [RoundButton]()
     }
     
+    
+    /// TapScreen
+    ///
+    /// Functioned called when tapping on the screen to select appropriate tiles through raycasting
+    ///
+    /// - Parameter coord: the Point that describes where on the screen the screen was tapped
     public func tapScreen(coord: CGPoint) {
         let ray = getDirection(coord)
         let location = Renderer.camera.location
@@ -36,6 +42,8 @@ public class InputManager : Subscriber {
         selectTile(tile.x, tile.y)
     }
     
+    
+    /// Toggles the GodPower menu
     public func togglePowerMenu() {
         powerMenuEnabled = !powerMenuEnabled
         
@@ -61,6 +69,14 @@ public class InputManager : Subscriber {
         }
     }
     
+    
+    /// SelectTile
+    ///
+    /// Called when selecting a tile on the map to execute appropriate action
+    ///
+    /// - Parameters:
+    ///   - q: the column axial coordinate of the selected tile
+    ///   - r: the row axial coordinate of the selected tile
     private func selectTile(_ q: Int, _ r: Int) {
         var nextObject : UnitGroupComponent? = nil
         var prevObject : UnitGroupComponent? = nil
@@ -82,6 +98,7 @@ public class InputManager : Subscriber {
         
         let selectedTile = map.getTile(pos: Point2D(q,r))!
         
+        // DEBUG STATEMENTS
         var output = "\n"
         output += "Selected Tile (" + String(selectedTile.getAxial().x) + ", " + String(selectedTile.getAxial().y) + ") ["
         output += "Type: " + String(describing: selectedTile.type) + ", "
@@ -197,6 +214,13 @@ public class InputManager : Subscriber {
         }
     }
     
+    
+    /// GetDirection
+    
+    /// A function to get a normalized vector representing the direction of the normal of the camera
+    ///
+    /// - Parameter loc: point on the viewport that the ray originates from
+    /// - Returns: the normal to the camera viewport
     private func getDirection(_ loc: CGPoint) -> GLKVector3{
         let bounds = UIScreen.main.bounds
         let x = Float((2 * loc.x) / bounds.size.width - 1.0)

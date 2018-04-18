@@ -9,6 +9,9 @@
 import Foundation
 import GLKit
 
+/**
+    A component for a unit group game object which defines its behaviour as a group container
+*/
 public class UnitGroupComponent : Component {
     // Axial coordinate position
     public var position = [0, 0]
@@ -48,6 +51,8 @@ public class UnitGroupComponent : Component {
     }
     
     public override func update(delta: Float) {
+        
+        // Heal the unit passively
         lastHealTime += delta
         if (lastHealTime > secsToHeal) {
             lastHealTime -= secsToHeal
@@ -57,6 +62,7 @@ public class UnitGroupComponent : Component {
             }
         }
         
+        // If the unit hasn't moved and they have somewhere they want to move and they can move, then start moving them
         if (stepProgress <= 0.0 && movePath.count > 0 && haltCounter <= 0) {
             // Recalibrate movement
             if target != nil {
@@ -72,6 +78,8 @@ public class UnitGroupComponent : Component {
                 endPosition[1] = movePath[0].y
             }
         }
+        
+        // If we are moving and haven't reached our destination
         if ((endPosition[0] != startPosition[0] || endPosition[1] != startPosition[1]) && haltCounter <= 0) {
             stepProgress += moveSpeed * delta
             if (stepProgress >= 0.5 && (position[0] != endPosition[0] || position[1] != endPosition[1])) {
@@ -96,6 +104,7 @@ public class UnitGroupComponent : Component {
         }
     }
     
+    // Renderer clenaup code when the object is deleted by the game
     public override func delete() {
         for u in unitGroup.peopleArray {
             let unit = u as! SingleUnit
@@ -106,6 +115,7 @@ public class UnitGroupComponent : Component {
         }
     }
 
+    // Sets the position of the unit without interpolating. May or may not trigger the moving event, depending on triggerMove being true or false
     public func setPosition(_ x : Int, _ y : Int, _ triggerMove : Bool = true) {
         let oldPos = position
         position[0] = x
@@ -140,6 +150,7 @@ public class UnitGroupComponent : Component {
         updateRenderPos()
     }
     
+    // Updates the positions of the individual unit models within the unit group
     private func updateRenderPos() {
         let axs = axialToWorld(startPosition[0], startPosition[1])
         let axe = axialToWorld(endPosition[0], endPosition[1])
@@ -192,6 +203,7 @@ public class UnitGroupComponent : Component {
         return (x,z)
     }
     
+    // Update the models for the units based on which units are inside of the unit group
     public func updateModels() {
         squareSize = Int(Float(unitGroup.peopleArray.count).squareRoot()) + 1
 
@@ -222,6 +234,7 @@ public class UnitGroupComponent : Component {
         }
     }
 
+    // Sets what the unit group is walking towards
     public func setTarget(_ target : PathFindingTarget) {
         self.target = target
         self.movePath = target.getPathToTarget(from: Point2D(position))
